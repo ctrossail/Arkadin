@@ -90,10 +90,10 @@ echo __(Date("l"))." ".Date("d")." ".__(Date("F"))." - ".Date("H:i:s")." CET - <
 	{
 		$selected = "";
 	}
-		
+		/*
 	echo "<li><form method=\"post\" action=\"".LINK."search/\"><span class=\"".$selected."\"><a href=\"".LINK."search/\">".__("Search")."</a>&nbsp;
 	".input("google_search","key_words")."
-	</span></form></li>";
+	</span></form></li>";*/
 	echo "</ul>";
 
 echo "</div>";

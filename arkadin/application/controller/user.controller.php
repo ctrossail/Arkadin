@@ -30,12 +30,17 @@ class user extends controller {
     }
 
     function login($bypass = false) {
-
-        $_SQL = Singleton::getInstance(SQL_DRIVER);
+	
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
 
         if ($_SERVER['REQUEST_METHOD'] == "POST" || $bypass) {
+			
+			
+			
+			
             if (!empty($_POST['login']) && !empty($_POST['password'])) {
 
+				
                 if (!$bypass) {
                     $password = $_SQL->sql_real_escape_string(sha1(sha1($_POST['password'] . sha1($_POST['login']))));
                 } else {
@@ -45,16 +50,19 @@ class user extends controller {
                 $sql = "select * from user_main where login = '" . $_SQL->sql_real_escape_string($_POST['login']) . "'"; // and password ='" . $password . "'
                 $res = $_SQL->sql_query($sql);
 
+				
+				
+				
                 if ($_SQL->sql_num_rows($res) == 1) {
                     $ob = $_SQL->sql_fetch_object($res);
 
                     if ($ob->password === $password) {
+
                         //HTTP_USER_AGENT
                         //problem avec chrome pour les cookies
-                        SetCookie("IdUser", $ob->id, time() + 60 * 60 * 24 * 365, '/', $_SERVER['SERVER_NAME'], false, true);
-                        SetCookie("Passwd", sha1($password . $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']), time() + 60 * 60 * 24 * 365, '/', $_SERVER['SERVER_NAME'], false, true);
-                        SetCookie("test", $password . "-" . $_SERVER['HTTP_USER_AGENT'] . "-" . $_SERVER['REMOTE_ADDR'], time() + 60 * 60 * 24 * 365, '/', $_SERVER['SERVER_NAME'], false, true);
-
+                        SetCookie("IdUser", $ob->id, time() + 60 * 60 * 24 * 365, '/', '', false, true);
+                        SetCookie("Passwd", sha1($password . $_SERVER['HTTP_USER_AGENT'] . $_SERVER['REMOTE_ADDR']), time() + 60 * 60 * 24 * 365, '/', '', false, true);
+                        
                         $sql = "UPDATE user_main SET date_last_login = now() where id='" . $_SQL->sql_real_escape_string($ob->id) . "'";
                         $_SQL->sql_query($sql);
 
@@ -63,8 +71,12 @@ class user extends controller {
                         if ($bypass) {
                             return;
                         }
+						
+	
+						$msg = $GLOBALS['_LG']->getTranslation(__("You are now connected."));
+                        $title = $GLOBALS['_LG']->getTranslation(__("Success"));
 
-
+                        set_flash("success", $title, $msg);
 
                         header("location: " . $_SERVER['REQUEST_URI']);
                         exit;
@@ -92,10 +104,10 @@ class user extends controller {
             }
 
             if (!empty($_POST['logout'])) {
-                SetCookie("Passwd", "", time() + 60 * 60 * 24 * 365, '/', $_SERVER['SERVER_NAME'], false, true);
+                SetCookie("Passwd", "", time() + 60 * 60 * 24 * 365, '/', '', false, true);
 
                 $title = $GLOBALS['_LG']->getTranslation(__("Logout !"));
-                $msg = $GLOBALS['_LG']->getTranslation(__("You have been fully disconnectionected from your account"));
+                $msg = $GLOBALS['_LG']->getTranslation(__("You have been fully disconnected from your account"));
 
                 set_flash("success", $title, $msg);
 

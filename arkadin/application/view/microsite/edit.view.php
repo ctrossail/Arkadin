@@ -19,7 +19,8 @@ echo "<table class=\"form\" width=\"100%\">";
 echo "<tr>";
 echo "<td class=\"first\">" . __("Site name") . " :</td>";
 echo "<td>";
-
+ 
+/* Delete then Add (you can't update site_name
 if (strlen($data['microsite_main'][0]['answer']) == 0)
 {
     echo input("microsite_main", "site_name", "textform");
@@ -27,7 +28,9 @@ if (strlen($data['microsite_main'][0]['answer']) == 0)
 else
 {
     echo '<input id="microsite_main-site_name" class="textform text" name="microsite_main[site_name]" value="'.$data['microsite_main'][0]['site_name'].'" type="text" readonly="readonly">';
-}
+}*/
+echo "&nbsp;".$data['microsite_main'][0]['site_name'];
+
 
 //echo input("microsite_main", "site_name", "textform");
 

@@ -4,9 +4,24 @@
 echo '<div id="translation">';
 
 
-echo '<div class="filter">
-<form acion="" method="post">'
+echo '<div class="filter">';
+
+echo '<form acion="" method="post">';
+echo __("Filter by name :") . autocomplete("microsite_main", "site_name", "textform");
+		
+	
+	
+echo "<input class=\"button btBlueTest overlayW btMedium\" type=\"submit\" value=\"" . __("Filter") . "\" /><br />";
+echo '</form>';
+
+
+
+
+
+echo '<form acion="" method="post">'
 //' . __("Filter the BOT :") . ' <input type="checkbox" name="bot" /> - 
+
+
  . __("Filter by country :") . select("microsite_main", "id_geolocalisation_country", $data['geolocalisation_country'], $data['id_geolocalisation_country'], "textform lg translation") . ' - ';
 echo __("Filter by error :") . select("microsite_main", "id_answer", $data['answer'], $data['id_answer'], "textform lg translation") . ' - ';
 echo __("Active") . " / " . __("Deleted") . " " . select("microsite_main", "id_history_etat", $data['history_etat'], $data['id_history_etat'], "textform lg translation") . ' ';
@@ -58,8 +73,8 @@ echo '<form acion="" method="post">';
 echo "<table>";
 
 echo '<tr><th class="tcs"><input type="checkbox" id="paradigm_all"></th>
-<th>' . __("Top") . '</th>
-<th>' . __("IP") . '</th>
+<th>ID</th>
+<th>' . __("IP") . ' WebEx</th>
 <th>' . "Site name" . '</th>
 <th>' . __("Users") . '</th>
 <th>' . __("Firstname") . '</th>
@@ -104,20 +119,32 @@ if (!empty($data['mircosite']))
 		if (stristr($text['answer'], 'SUCCESS'))
 		{
 			$pic = 'icon_success.gif';
-			$alt = $text['answer'];
+			$alt = 'WEBEX : '.$text['answer'];
 		}
-		elseif (mb_strlen($text['answer'], 'utf-8') != 0)
+		elseif ($text['answer'] == 'IMPOSSIBLE TO REACH THIS URL')
 		{
-			$pic = 'analysis_history_failed.png';
+			$pic = 'failed.png';
 			$alt = $text['answer'];
+			
 		}
 		else
 		{
-			$pic = 'failed.png';
-			$alt = 'FAILED TO GET DNS';
+			$pic = 'analysis_history_failed.png';
+			$alt = 'WEBEX : '.$text['answer'];
 		}
 
-		echo '<td>' . '<img src="' . IMG . '16/' . $pic . '" width="16" border="0" height="16" alt="' . $alt . '" title="' . $alt . '" />' . '</td>';
+		echo '<td>' . '<img src="' . IMG . '16/' . $pic . '" width="16" border="0" height="16" alt="' . $alt . '" title="' . $alt . '" />';
+		
+		if ($text['id_history_etat'] == 1)
+		{
+			echo ' <img src="' . IMG . '16/s_success.png" width="16" border="0" height="16" alt="Arkadin : ' . __("Active") . '" title="Arkadin : ' . __("Active") . '" />';
+		}
+		else
+		{
+			echo ' <img src="' . IMG . '16/mt_delete.png" width="16" border="0" height="16" alt="Arkadin : ' . __("Deleted") . '" title="Arkadin : ' . __("Deleted") . '" />';
+		}
+			
+		echo '</td>';
 		echo '<td>';
 //echo  '<a href="">Test</a> <a href="">Browse</a> <a href="">Search</a> <a href="">Empty</a> <a href="">Drop</a>' ;
 		if ($pic !== 'icon_success.gif')

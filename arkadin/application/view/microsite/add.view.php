@@ -41,6 +41,13 @@ echo "</tr>";
 
 
 
+
+echo "<tr>";
+echo "<td class=\"first\">" . __("Country") . " :</td>";
+echo "<td>" . select("microsite_main","id_geolocalisation_country",$data['geolocalisation_country'],"","textform") . "</td>";
+echo "</tr>";
+
+
 echo "<tr>";
 echo "<td class=\"first\">" . __("Comment") . " :</td>";
 echo "<td>";
