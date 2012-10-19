@@ -6,6 +6,9 @@
  */
 
 //debug($data);
+include_once(LIBRARY . "Glial/service/webex/webex.php");
+
+$url = webex::generate_url($data['microsite_main'][0]['site_name']);
 
 echo "<h3 class=\"item\">" . __("Main") . "</h3>";
 
@@ -29,9 +32,9 @@ else
 {
     echo '<input id="microsite_main-site_name" class="textform text" name="microsite_main[site_name]" value="'.$data['microsite_main'][0]['site_name'].'" type="text" readonly="readonly">';
 }*/
-echo "&nbsp;".$data['microsite_main'][0]['site_name'];
+echo '&nbsp;<a href="'.$url.'" target="_BLANK">'.$data['microsite_main'][0]['site_name']."</a>";
 
-
+echo hidden("microsite_main", "site_name", $data['microsite_main'][0]['site_name']);
 //echo input("microsite_main", "site_name", "textform");
 
 echo "</td>";

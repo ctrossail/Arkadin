@@ -36,7 +36,8 @@ echo "<div id=\"box\">";
 
  */
 
-
+echo "<h3>".__("Help")."</h3>";
+echo '<a href="/documentation/gui.html">Guides user interface</a>';
 
 echo '<img src="'.IMG.'arkadin/1290018583thumbs.png" width="530" height="299" style="margin: 0 auto; display:block;" />';
 

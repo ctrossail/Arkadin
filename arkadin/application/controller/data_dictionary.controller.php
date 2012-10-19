@@ -9,8 +9,7 @@ class data_dictionary extends Controller {
 	}
 
 	function test_sql_server() {
-
-
+		
 		$_SQL = Singleton::getInstance(SQL_DRIVER);
 
 		$sql = "SELECT * FROM data_dictionary_server where is_valid = 1 order by ip";
@@ -22,9 +21,6 @@ class data_dictionary extends Controller {
 			echo "...";
 			echo str_repeat(" ",15-strlen($ob->ip)+1);
 			$link = @mssql_connect($ob->ip, $ob->login, $ob->password);
-
-			
-			
 
 			if (!$link)
 			{
