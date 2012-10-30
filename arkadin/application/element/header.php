@@ -59,18 +59,33 @@ echo __(Date("l"))." ".Date("d")." ".__(Date("F"))." - ".Date("H:i:s")." CET - <
 
 <div id="menu">
 <?php
-	$menu = array(__("Home"), "Webex",__("Members"));
+	$menu = array(__("Home"), "Webex", "Mapping users",__("Members"));
         //,__("Download"),__("Contact us")  );
-	$link = array("home/", "microsite/","user/");
+	$link = array("home/", "microsite/","microsite/resultat_mapping/","user/");
         //,"download/","contact_us/");
         
 	echo "<ul class=\"menu\">";
 
 	$i = 0;
+	
+	
+	$url = explode("/",$_GET['url']);
+	
+	
 	foreach($menu as $value)
 	{
 		$tmp = explode("/",$link[$i]);
-		if (strstr($_GET['url'],$tmp[0]) || ($_GET['url'] === "home/index/" && $i === 0))
+
+		if (empty($tmp[1]))
+		{
+			$tmp[0] = " ";
+		}
+		if (empty($url[1]))
+		{
+			$url[1] = " ";
+		}
+		
+		if ((strstr($url[0],$tmp[0]) && strstr($url[1],$tmp[1])) || ($_GET['url'] === "home/index/" && $i === 0))
 		{
 			$selected = "selected";
 		}
