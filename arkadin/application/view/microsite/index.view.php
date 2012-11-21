@@ -1,6 +1,5 @@
 <?php
 
-
 echo '<div id="translation">';
 
 
@@ -8,9 +7,9 @@ echo '<div class="filter">';
 
 echo '<form acion="" method="post">';
 echo __("Filter by name :") . autocomplete("microsite_main", "site_name", "textform");
-		
-	
-	
+
+
+
 echo "<input class=\"button btBlueTest overlayW btMedium\" type=\"submit\" value=\"" . __("Filter") . "\" /><br />";
 echo '</form>';
 
@@ -20,8 +19,6 @@ echo '</form>';
 
 echo '<form acion="" method="post">'
 //' . __("Filter the BOT :") . ' <input type="checkbox" name="bot" /> - 
-
-
  . __("Filter by country :") . select("microsite_main", "id_geolocalisation_country", $data['geolocalisation_country'], $data['id_geolocalisation_country'], "textform lg translation") . ' - ';
 echo __("Filter by error :") . select("microsite_main", "id_answer", $data['answer'], $data['id_answer'], "textform lg translation") . ' - ';
 echo __("Active") . " / " . __("Deleted") . " " . select("microsite_main", "id_history_etat", $data['history_etat'], $data['id_history_etat'], "textform lg translation") . ' ';
@@ -55,7 +52,7 @@ echo "<div>";
 
 
 
-if (!empty($data['pagination']) && $data['count'][0]['cpt'] > HISTORY_ELEM_PER_PAGE)
+if ( !empty($data['pagination']) && $data['count'][0]['cpt'] > HISTORY_ELEM_PER_PAGE )
 {
 	echo $data['pagination'];
 	echo "<br />";
@@ -93,16 +90,16 @@ echo "</tr>";
 
 
 
-if (!empty($data['mircosite']))
+if ( !empty($data['mircosite']) )
 {
 
-	foreach ($data['mircosite'] as $text)
+	foreach ( $data['mircosite'] as $text )
 	{
 		echo '<td>&nbsp;<input class="select_all" type="checkbox" name="update[id-' . $text['id'] . ']" /></td>';
 		echo '<td>#' . $text['id_site'] . '</td>';
 		echo '<td>';
 
-		if (!empty($text['iso']))
+		if ( !empty($text['iso']) )
 		{
 			echo '<img src="' . IMG . 'country/type1/' . $text['iso'] . '.gif" width="18" border="0" height="12"> ';
 		}
@@ -116,26 +113,25 @@ if (!empty($data['mircosite']))
 		echo '<td>' . $text['login'] . '</a></td>';
 		echo '<td>' . $text['password'] . '</td>';
 
-		if (stristr($text['answer'], 'SUCCESS'))
+		if ( stristr($text['answer'], 'SUCCESS') )
 		{
 			$pic = 'icon_success.gif';
-			$alt = 'WEBEX : '.$text['answer'];
+			$alt = 'WEBEX : ' . $text['answer'];
 		}
-		elseif ($text['answer'] == 'IMPOSSIBLE TO REACH THIS URL')
+		elseif ( $text['answer'] == 'IMPOSSIBLE TO REACH THIS URL' )
 		{
 			$pic = 'failed.png';
 			$alt = $text['answer'];
-			
 		}
 		else
 		{
 			$pic = 'analysis_history_failed.png';
-			$alt = 'WEBEX : '.$text['answer'];
+			$alt = 'WEBEX : ' . $text['answer'];
 		}
 
 		echo '<td>' . '<img src="' . IMG . '16/' . $pic . '" width="16" border="0" height="16" alt="' . $alt . '" title="' . $alt . '" />';
-		
-		if ($text['id_history_etat'] == 1)
+
+		if ( $text['id_history_etat'] == 1 )
 		{
 			echo ' <img src="' . IMG . '16/s_success.png" width="16" border="0" height="16" alt="Arkadin : ' . __("Active") . '" title="Arkadin : ' . __("Active") . '" />';
 		}
@@ -143,11 +139,11 @@ if (!empty($data['mircosite']))
 		{
 			echo ' <img src="' . IMG . '16/mt_delete.png" width="16" border="0" height="16" alt="Arkadin : ' . __("Deleted") . '" title="Arkadin : ' . __("Deleted") . '" />';
 		}
-			
+
 		echo '</td>';
 		echo '<td>';
 //echo  '<a href="">Test</a> <a href="">Browse</a> <a href="">Search</a> <a href="">Empty</a> <a href="">Drop</a>' ;
-		if ($pic !== 'icon_success.gif')
+		if ( $pic !== 'icon_success.gif' )
 		{
 			echo '<a href="' . LINK . 'microsite/edit/' . $text['id_site'] . '">' . __('Edit') . '</a>';
 		}
@@ -156,8 +152,6 @@ if (!empty($data['mircosite']))
 
 
 		echo "</tr>";
-		
-		
 	}
 }
 echo "</table>";
@@ -176,7 +170,7 @@ echo '<a class="button btBlueTest overlayW btMedium" href="' . LINK . 'microsite
 echo " ";
 echo '<a class="button btBlueTest overlayW btMedium" href="' . LINK . 'microsite/import/">' . __("Import a list of sites WebEx") . '</a> - ';
 
-echo __("Export to CSV").' : ';
+echo __("Export to CSV") . ' : ';
 
 //echo '<a class="button btBlueTest overlayW btMedium" href="' . LINK . 'microsite/export/site">' . __("Sites") . '</a> ';
 //echo '<a class="button btBlueTest overlayW btMedium" href="' . LINK . 'microsite/export/user">' . __("All users") . '</a> ';

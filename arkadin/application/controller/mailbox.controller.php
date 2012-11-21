@@ -25,8 +25,6 @@ where a.id ='" . $GLOBALS['_SQL']->sql_real_escape_string($GLOBALS['_SITE']['IdU
 			. ' > ' . '<a href="' . LINK . 'user/'.$GLOBALS['_SITE']['IdUser'].'">'.__('Mailbox').'</a>'
 			. ' > ' .$this->title;
 
-		
-
 		$this->set("data", $this->data);
 	}
 	

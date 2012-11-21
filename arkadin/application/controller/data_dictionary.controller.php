@@ -12,7 +12,7 @@ class data_dictionary extends Controller {
 
 		$_SQL = Singleton::getInstance(SQL_DRIVER);
 
-		$sql = "SELECT * FROM data_dictionary_server where is_valid = 1 order by ip";
+		$sql = "SELECT * FROM data_dictionary_server  order by ip";//where is_valid = 1
 		$res = $_SQL->sql_query($sql);
 
 		while ($ob = $_SQL->sql_fetch_object($res)) {

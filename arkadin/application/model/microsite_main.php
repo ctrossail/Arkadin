@@ -1,6 +1,7 @@
 <?php
 
-class microsite_main extends sql {
+class microsite_main extends sql
+{
 
 	var $schema = "CREATE TABLE `microsite_main` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -30,10 +31,10 @@ class microsite_main extends sql {
 		'ip' => array(
 			'ip' => array("Your IP is not valid")
 		),
-		
 	);
 
-	function get_validate() {
+	function get_validate()
+	{
 		return $this->validate;
 	}
 
