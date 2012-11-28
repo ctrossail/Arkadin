@@ -67,11 +67,14 @@ class mx extends Controller
 
 		while ( $ob = $GLOBALS['_SQL']->sql_fetch_object($res) )
 		{
+		
+			/*
 			if ( $ob->mx == "10.102.16.200" )
 				continue; //problem key public
 			if ( $ob->mx == "10.243.3.200" )
 				continue;
-
+*/
+			
 			$directory = "/home/backup_mx/" . $ob->mx . "/";
 
 			$cmd = "mkdir -p " . $directory;

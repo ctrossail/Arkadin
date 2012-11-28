@@ -106,7 +106,7 @@ if ( !empty($data['mircosite']) )
 		echo $text['ip'] . '</td>';
 		echo '<td>';
 		echo '<img src="' . IMG . 'country/type1/' . strtolower($text['iso2']) . '.gif" width="18" border="0" height="12"> ';
-		echo '<a href="#" class="tooltip">' . $text['site_name'] . '</a></td>';
+		echo '<a href="'.LINK.'microsite/user/'.$text['id_site'].'" class="tooltip">' . $text['site_name'] . '</a></td>';
 		echo '<td>' . $text['total'] . '</a></td>';
 		echo '<td><a href="mailto:' . $text['email'] . '">' . $text['firstname'] . '</a></td>';
 		echo '<td><a href="mailto:' . $text['email'] . '">' . $text['lastname'] . '</a></td>';

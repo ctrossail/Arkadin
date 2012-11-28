@@ -1,5 +1,7 @@
 <?php
 
+echo "<h3>Bridges Avaya 6200</h3>";
+
 echo '<table class="table">';
 echo "<tr>";
 
@@ -51,3 +53,7 @@ foreach ($data['ddi'] as $key => $var)
 
 
 echo "</table>";
+
+
+echo "<h3>Bridges Avaya 7000</h3>";
+echo "<h3>Bridges Viper</h3>";

@@ -25,8 +25,8 @@ foreach ($data['stats'] as $key => $line)
 		echo "<tr>";
 	}
 
-
-	echo "<td>".$key."</td>";
+	echo '<td><a href="'.LINK.'microsite/user/'.$key.'" class="tooltip">' . $key . '</a></td>';
+	
 	foreach ($line as $elem)
 	{
 		echo "<td>" . $elem . "</td>";
