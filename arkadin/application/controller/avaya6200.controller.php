@@ -5,9 +5,11 @@
  * and open the template in the editor.
  */
 
-class avaya6200 extends controller {
+class avaya6200 extends controller
+{
 
-	function index() {
+	function index()
+	{
 
 		$this->layout_name = "admin";
 		$this->title = "Avaya 6200";
@@ -15,7 +17,6 @@ class avaya6200 extends controller {
 
 		$data = array();
 		$_SQL = Singleton::getInstance(SQL_DRIVER);
-
 
 		$sql = "SELECT a.name,a.ip, a.mx,a.id, count(1) as cpt, 
 			sum(b.is_ok) as is_ok,sum(only_in_mx) as only_in_mx,sum(only_in_bridge) as only_in_bridge,
@@ -26,35 +27,70 @@ class avaya6200 extends controller {
 		where a.mx != '' and a.is_ok = 1
 		 GROUP BY b.id_data_dictionary_server
 		 order by name";
-
 		$res = $_SQL->sql_query($sql);
 
 		$data['ddi'] = $_SQL->sql_to_array($res);
 
 
+		$sql = "SELECT a.ddi as tn,count(1) as cpt, GROUP_CONCAT(DISTINCT name
+                  ORDER BY name DESC SEPARATOR ':')  as server
+				  from compilation_ddi a
+				  INNER JOIN data_dictionary_server b ON b.id = a.id_data_dictionary_server
+				  group by ddi having count(1) > 1 order by a.ddi";
+
+		$res = $_SQL->sql_query($sql);
+		$data['duplicate_tn']['avaya6200'] = $_SQL->sql_num_rows($res);
+
+
+
+
+
 		$this->set('data', $data);
 	}
 
-	function detail($param) {
+	function tn_duplicate()
+	{
+
+		$this->layout_name = "admin";
+		$this->title = 'Terminated number';
+		$this->ariane = '> <a href="' . LINK . 'avaya6200/">Avaya 6200</a> > ' . $this->title;
 
 		$_SQL = Singleton::getInstance(SQL_DRIVER);
 
-		
-		$sql = "SELECT * FROM data_dictionary_server where id ='".$_SQL->sql_real_escape_string($param[0]) ."'";
+
+		$sql = "SELECT a.ddi as tn,count(1) as cpt, GROUP_CONCAT(DISTINCT name
+                  ORDER BY name DESC SEPARATOR ':')  as server
+				  from compilation_ddi a
+				  INNER JOIN data_dictionary_server b ON b.id = a.id_data_dictionary_server
+				  group by ddi having count(1) > 1 order by a.ddi";
+
+		$res = $_SQL->sql_query($sql);
+
+		$data['tn'] = $_SQL->sql_to_array($res);
+		$this->set('data', $data);
+	}
+
+	function detail($param)
+	{
+
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+
+		$sql = "SELECT * FROM data_dictionary_server where id ='" . $_SQL->sql_real_escape_string($param[0]) . "'";
 		$res = $_SQL->sql_query($sql);
 
 		$data['server'] = $_SQL->sql_to_array($res);
-		
+
 		$this->layout_name = "admin";
 		$this->title = $data['server'][0]['name'];
-		$this->ariane = '> <a href="'.LINK.'avaya6200/">Avaya 6200</a> > ' . $this->title;
+		$this->ariane = '> <a href="' . LINK . 'avaya6200/">Avaya 6200</a> > ' . $this->title;
 
 
 		$data = array();
 		$_SQL = Singleton::getInstance(SQL_DRIVER);
 		$sql = "SELECT * FROM compilation_ddi WHERE id_data_dictionary_server = '" . $_SQL->sql_real_escape_string($param[0]) . "'";
 
-		if ($param[1] != "all")
+		if ( $param[1] != "all" )
 		{
 			$sql .= " AND `" . $_SQL->sql_real_escape_string($param[1]) . "` = 1 ";
 		}

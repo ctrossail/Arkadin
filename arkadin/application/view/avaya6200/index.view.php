@@ -2,6 +2,9 @@
 
 echo "<h3>Bridges Avaya 6200</h3>";
 
+echo '<a href="'.LINK.'avaya6200/tn_duplicate/">Duplicate terminated number on server Avaya 6200 : '.$data['duplicate_tn']['avaya6200'].'<a/><br /><br />';
+
+
 echo '<table class="table">';
 echo "<tr>";
 

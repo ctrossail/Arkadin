@@ -18,8 +18,6 @@ class bizfile extends controller
 
 		$pidfile = TMP . "bizfile/pidfile";
 
-
-
 		if ( from() == "administration.controller.php" )
 		{
 			$module = array();

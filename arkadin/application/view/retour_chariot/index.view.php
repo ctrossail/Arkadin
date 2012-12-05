@@ -1,66 +1,48 @@
 <?php
 
-echo '<div id="translation">';
+echo '<ul id="onglet" class="menu_tab" style="padding-left: 3px;">';
 
 
+switch ( $data['page'] )
+{
+	case 'server_audit':
 
-/*
-  echo '
+	$class1 = 'selected';
+	$class2 = '';
+	break;
 
-  <div class="filter">
-  <form acion="" method="post">
-  ' . __("Filter the BOT :") . ' <input type="checkbox" name="bot" /> -
-  ' . __("Filter by user :") . select("history_main", "id_user_main", $data['user'], $data['id_user_main'], "textform lg translation") . ' - ';
-
-  echo __("Filter by action :") . select("history_main", "id_history_action", $data['history_action'], $data['id_history_action'], "textform lg translation") . ' - ';
-  echo '<input class="button btBlueTest overlayW btMedium" type="submit" value="' . __("Filter") . '" />';
-  echo '<input type="hidden" name="filter" value="gxfgh" />';
-  echo '
-  </form>
-  </div>';
-  echo "<br />";
-
- * 
- */
-echo "<div>";
-
-
-
-//debug($data);
-
-
-
-if (!empty($data['pagination']) && $data['count'][0]['cpt'] > HISTORY_ELEM_PER_PAGE) {
-    echo $data['pagination'];
+	case 'auditprod':
+	$class1 = '';
+	$class2 = 'selected';
+	break;
 }
 
 
-echo "</div>";
+echo '<li id="sub_species" class="'.$class2.'"><a href="'.LINK.'retour_chariot/index/auditprod/">AUDITPROD</a></li>';
+echo '<li id="general" class="'.$class1.'"><a href="'.LINK.'retour_chariot/index/server_audit/">' . __("Server") . ' Audit</a></li>';
 
 
 
-//echo "<br />";
+echo '</ul>';
 
-echo '<form acion="" method="post">';
+echo '<table class = "table">';
 
-echo "<table>";
+echo '<tr>
 
-echo '<tr><th class="tcs"><input type="checkbox" id="paradigm_all"></th>
-<th>' . __("Top") . '</th>
+<th>' . __("top") . '</th>
 <th>' . __("IP") . '</th>
-<th>' . "Site name" . '</th>
-    <th>' . __("Users") . '</th>
-<th>' . __("Firstname") . '</th>
-<th>' . __("Lastname") . '</th>
-<th>' . __("Login") . '</th>
-<th>' . __("Password") . '</th>
-<th>' . __("Status") . '</th>
-<th>' . __("Tools") . '</th>';
+<th>' . __("Database") . '</th>
+<th>' . __("Table") . '</th>
+<th>' . __("Count") . '</th>
+<th>' . __("Field") . '</th>
+<th>' . __("Numbers") . '</th>
+<th>' . __("Data quality") . '</th>
+<th>' . __("Type") . '</th>
+<th>' . __("Collation") . '</th>
+<th>' . __("Set name") . '</th>';
 
 
-echo '<th class="tce">' . __("Registration date");
-echo "</th>";
-//echo "<th class=\"tce\">".__("Delete")."</th>";
+
 echo "</tr>";
 
 $i = 1;
@@ -68,77 +50,47 @@ $i = 1;
 $total_user = 0;
 
 
-if (!empty($data['mircosite'])) {
+if ( !empty($data['report']) )
+{
 
-    foreach ($data['mircosite'] as $text) {
-        echo '<td>&nbsp;<input class="select_all" type="checkbox" name="id_history_etat[id-' . $text['id'] . ']" /></td>';
-        echo '<td>#' . $text['id_site'] . '</td>';
-        echo '<td>';
-
-        if (!empty($text['iso'])) {
-            echo '<img src="' . IMG . 'country/type1/' . $text['iso'] . '.gif" width="18" border="0" height="12"> ';
-        }
-        echo $text['ip'] . '</td>';
-        echo '<td>';
-        echo '<img src="' . IMG . 'country/type1/' . strtolower($text['iso2']) . '.gif" width="18" border="0" height="12"> ';
-        echo '<a href="#" class="tooltip">' . $text['site_name'] . '</a></td>';
-        echo '<td>' . $text['total'] . '</a></td>';
-        echo '<td><a href="mailto:' . $text['email'] . '">' . $text['firstname'] . '</a></td>';
-        echo '<td><a href="mailto:' . $text['email'] . '">' . $text['lastname'] . '</a></td>';
-        echo '<td>' . $text['login'] . '</a></td>';
-        echo '<td>' . $text['password'] . '</td>';
-
-        if (stristr($text['answer'], 'SUCCESS')) {
-            $pic = 'icon_success.gif';
-            $alt = $text['answer'];
-        } elseif (mb_strlen($text['answer'], 'utf-8') != 0) {
-            $pic = 'analysis_history_failed.png';
-            $alt = $text['answer'];
-        } else {
-            $pic = 'failed.png';
-            $alt = 'FAILED TO GET DNS';
-        }
-
-        echo '<td>' . '<img src="' . IMG . '16/' . $pic . '" width="16" border="0" height="16" alt="' . $alt . '" title="' . $alt . '" />' . '</td>';
-        echo '<td>';
-        //echo  '<a href="">Test</a> <a href="">Browse</a> <a href="">Search</a> <a href="">Empty</a> <a href="">Drop</a>' ;
-        if ($pic !== 'icon_success.gif') {
-            echo '<a href="' . LINK . 'microsite/edit/' . $text['id_site'] . '">' . __('Edit') . '</a>';
-        }
-        echo '</td>';
-        echo '<td>' . $text['registration_date'] . '</td>';
+	$i=1;
+	foreach ( $data['report'] as $text )
+	{
 
 
-        echo "</tr>";
-        $i++;
-        $total_user += $text['total'];
-    }
+		
+		$class = array();
+
+		if ( $i % 2 == 0 )
+		{
+			$class[] = 'hightlight';
+		}
+
+		if ( $text['cpt'] == '2000' )
+		{
+			$class[] = 'bold';
+		}
+		
+		echo '<tr class = "'.implode(' ',$class).'">';
+		
+		$link = LINK ."retour_chariot/detail/".$text['ip']."/".$text['base']."/".$text['table']."/".$text['field']."/";
+		
+		echo '<td>' . $i . '</td>';
+		echo '<td><a href = "'.$link.'">' . $text['ip'] . '</a></td>';
+		echo '<td><a href = "'.$link.'">' . $text['base'] . '</a></td>';
+		echo '<td><a href = "'.$link.'">' . $text['table'] . '</a></td>';
+		echo '<td align = "right">' . number_format (  $text['cpt2'] , 0 , '.' , $thousands_sep = ' ' ) . '</td>';
+		echo '<td><a href = "'.$link.'">' . $text['field'] . '</a></td>';
+		echo '<td>' . $text['cpt'] . '</td>';
+		echo '<td>' . round(($text['cpt2']-$text['cpt'])/ $text['cpt2']*100,2) . '%</td>';
+		echo '<td>' . $text['type'] . '</td>';
+		echo '<td>' . $text['collation'] . '</td>';
+		echo '<td>' . $text['set_name'] . '</td>';
+		
+
+		echo "</tr>";
+		$i++;
+	}
 }
 echo "</table>";
 
-
-echo '<br />';
-
-echo '<img src="'.IMG.'main/arrow_ltr.png" height="22" width="38" />';
-
-echo '<a class="button btBlueTest overlayW btMedium" href="'.LINK.'microsite/delete/">'.__("Delete these sites").'</a>';
-//echo '<input class="button btBlueTest overlayW btMedium" type="submit" value="' . __("Delete these sites") . '" /> ';
-
-echo " - ";
-echo '<a class="button btBlueTest overlayW btMedium" href="'.LINK.'microsite/add/">'.__("Add a new site WebEx").'</a>';
-
-echo " - ";
-echo '<a class="button btBlueTest overlayW btMedium" href="'.LINK.'microsite/import/">'.__("Import a list of sites WebEx").'</a>';
-
-echo " - ";
-echo '<a class="button btBlueTest overlayW btMedium" href="'.LINK.'microsite/export_csv/">'.__("Export CapGemini").'</a>';
-
-
-echo '<br /><br />';
-
-echo __('Number of sites :').'<b>'.$i."</b><br />";
-echo __('Number of users : ').'<b>'.$total_user."</b><br />";
-
-
-echo '</form>';
-echo '</div>';

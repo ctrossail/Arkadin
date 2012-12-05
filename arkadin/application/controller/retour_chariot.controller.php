@@ -1,78 +1,74 @@
 <?php
 
-class retour_chariot
+class retour_chariot extends controller
 {
-	/*
-	  function index()
-	  {
 
-	  }
+	var $_i = 0;
 
-	  /*
-	  function import_fields()
-	  {
-	  $_SQL = Singleton::getInstance(SQL_DRIVER);
+	function index($param)
+	{
+		$this->title = __("Carriage return");
+		$this->ariane = "> " . $this->title;
+		$this->layout_name = "admin";
 
-
-	  $sql = "SELECT * FROM retour_chariot_base_table";
-	  $res = $_SQL->sql_query($sql);
-
-	  //foreach ($tab as $line)
-	  while ( $ob = $_SQL->sql_fetch_object($res) )
-	  {
-
-	  echo "data : " . $ob->base_table . "\n";
-
-	  $base = explode("_", $ob->base_table);
-
-	  $nb_elem = count($base) - 1;
-	  $base_name = array();
-
-	  for ( $j = 0; $j < $nb_elem; $j++ )
-	  {
-	  $base_name[] = $base[$j];
-	  $try_base = implode("_", $base_name);
-
-	  $sql = "SELECT id FROM data_dictionary_base WHERE name= '" . $try_base . "'";
-	  $res2 = $_SQL->sql_query($sql);
-
-	  //echo $sql . "\n";
-
-	  $nb_db = $_SQL->sql_num_rows($res2);
-
-	  if ( $nb_db == 1 )
-	  {
-
-	  $table_name = array();
-	  for ( $k = $j + 1; $k < $nb_elem; $k++ )
-	  {
-	  $table_name[] = $base[$k];
-	  }
-
-	  $table = implode("_", $table_name);
-
-	  echo "Base : " . $try_base . " - table : " . $table . " => added\n";
-
-	  $data = array();
-	  $data['retour_chariot_base_table']['id'] = $ob->id;
-	  $data['retour_chariot_base_table']['base'] = $_SQL->sql_real_escape_string($try_base);
-	  $data['retour_chariot_base_table']['table'] = $_SQL->sql_real_escape_string($table);
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
 
 
-	  if ( !$_SQL->sql_save($data) )
-	  {
-	  debug($data);
-	  debug($_SQL->sql_server());
-	  die();
-	  }
-	  }
-	  else
-	  {
-	  //echo "Base : " . $try_base . " => not found (" . $nb_db . ")\n";
-	  }
-	  }
-	  }}
-	 */
+
+		if ( empty($param[0]) )
+		{
+			$param[0] = "auditprod";
+		}
+
+		switch ( $param[0] )
+		{
+			case 'server_audit':
+				$sql = "SELECT distinct `ip`,`base`,`table`,`field`, `collation`,`type`,`set_name`,cpt as cpt2,count(1)  as cpt 
+			FROM retour_chariot_data_full group by `ip`,`base`,`table`,cpt,`field` ORDER by `ip`,`base`";
+
+				break;
+
+			case 'auditprod':
+				$sql = "SELECT distinct `ip`,a.`base`,a.`table`,a.`field`, `collation`,`type`,`set_name`,cpt as cpt2,count(1)  as cpt 
+			FROM retour_chariot_data_full a
+			INNER JOIN retour_chariot_auditprod b ON a.`base` = b.`base` AND a.`table` = b.`table`
+			where a.`base` LIKE	'AUDITPROD%'
+			group by `ip`,a.`base`,a.`table`,cpt,a.`field` ORDER by `ip`,`base`";
+
+				break;
+		}
+
+		$data['page'] = $param[0];
+
+
+
+
+
+		$res = $_SQL->sql_query($sql);
+
+		$data['report'] = $_SQL->sql_to_array($res);
+
+
+		$this->set('data', $data);
+	}
+
+	function detail($param)
+	{
+		$this->title = $param[0] . " > " . $param[1] . "  > " . $param[2] . " > " . $param[3];
+		$this->ariane = '> <a href="' . LINK . 'retour_chariot/">' . __("Carriage return") . "</a> > " . __("Detail") . " > " . $this->title;
+		$this->layout_name = "admin";
+
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+		$sql = "SELECT * FROM retour_chariot_data_full where `ip`='" . $param[0] . "' AND `base`='" . $param[1] . "' AND `table`='" . $param[2] . "' AND `field`='" . $param[3] . "'";
+
+		$res = $_SQL->sql_query($sql);
+		$data['detail'] = $_SQL->sql_to_array($res);
+		$data['field'] = $param[3];
+		$data['query'] = "select top 2000 [" . $param[3] . "] FROM (SELECT  [" . $param[3] . "] FROM [" . $param[1] . "]..[" . $param[2] . "] WHERE CHARINDEX(char(10), [" . $param[3] . "],1) >0
+					UNION SELECT  [" . $param[3] . "] FROM [" . $param[1] . "]..[" . $param[2] . "] WHERE CHARINDEX(char(13), [" . $param[3] . "],1) >0) X";
+
+		$this->set('data', $data);
+	}
 
 	function import_from_file()
 	{
@@ -111,7 +107,6 @@ class retour_chariot
 
 			unset($tab_elem[0]);
 			unset($tab_elem[1]);
-
 
 			foreach ( $tab_elem as $elem )
 			{
@@ -152,12 +147,10 @@ class retour_chariot
 		 */
 	}
 
+	
+	/*
 	function get_return_carriage()
 	{
-
-		
-		
-		
 		$this->view = false;
 		$this->layout_name = false;
 
@@ -167,8 +160,10 @@ class retour_chariot
 		$sql = "truncate table retour_chariot_data";
 		$_SQL->sql_query($sql);
 
-
-
+		
+		$sql = "DELETE retour_chariot_data_full WHERE base like 'AUDITPROD_%'";
+		$_SQL->sql_query($sql);
+		
 		$sql = "SELECT * FROM retour_chariot_base a
 			INNER JOIN retour_chariot_mapping b ON a.base = b.logical_name";
 
@@ -187,7 +182,7 @@ class retour_chariot
 				continue;
 			}
 
-			echo $i . " [" . date("Y-m-d H:i:s") . "] conected to : " . $ob->server . " : " . $ob->database . " / ".$ob->logical_name."\n";
+			echo $i . " [" . date("Y-m-d H:i:s") . "] conected to : " . $ob->server . " : " . $ob->database . " / " . $ob->logical_name . "\n";
 
 			mssql_select_db($ob->database);
 
@@ -221,6 +216,282 @@ class retour_chariot
 			}
 
 			mssql_close($db);
+		}
+	}
+	 * 
+	 */
+
+	function extract_all()
+	{
+
+		include_once LIBRARY . 'Glial' . DS . 'shell' . DS . 'color.php';
+
+		$color = new \glial\shell\color;
+
+		$this->view = false;
+		$this->layout_name = false;
+
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+
+
+		
+		
+		
+		$sql = "TRUNCATE retour_chariot_data_full";
+		//$_SQL->sql_query($sql);
+		
+		$sql = "DELETE FROM retour_chariot_data_full WHERE base like 'AUDITPROD_%'";
+		$_SQL->sql_query($sql);
+		
+		
+
+		$sql = "SELECT distinct base FROM retour_chariot_data_full";
+		$res = $_SQL->sql_query($sql);
+
+		$list_base = array();
+		while ( $ob = $_SQL->sql_fetch_object($res) )
+		{
+			$list_base[] = $ob->base;
+		}
+
+
+		$sql = "SELECT * FROM data_dictionary_server  where id =1"; //where is_valid = 1
+		$res = $_SQL->sql_query($sql);
+
+		while ( $ob = $_SQL->sql_fetch_object($res) )
+		{
+
+			echo "Try to connect :" . $ob->ip;
+			echo "...";
+			echo str_repeat(" ", 15 - strlen($ob->ip) + 1);
+			$dbh = @mssql_connect($ob->ip, $ob->login, $ob->password);
+
+			$sql = "SELECT name FROM master..sysdatabases order by name";
+
+			$stmt1 = mssql_query($sql, $dbh) or die($sql);
+
+			while ( $row1 = mssql_fetch_assoc($stmt1) )
+			{
+				if ( in_array($row1['name'], array('tempdb', 'master', 'model')) )
+				{
+					continue;
+				}
+
+				$base = $row1['name'];
+
+
+				if ( in_array($base, $list_base) )
+				{
+					continue;
+				}
+
+
+				if ( in_array($base, array('TestCoura', 'TestMarina', 'TestChristine', 'DBAmp_PROD')) )
+				{
+					continue;
+				}
+
+
+				$sql = "use [" . $base . "]";
+				mssql_query($sql, $dbh) or die($sql);
+
+				echo $color->get_colored_string($this->_i . " [" . date("Y-m-d H:i:s") . "] BASE : " . $base, "white", "green") . "\n";
+
+				$this->extract_base($ob->ip, $base, $dbh);
+			}
+		}
+
+		exit;
+	}
+
+	function extract_base($ip, $base, $dbh)
+	{
+
+		$color = new \glial\shell\color;
+
+		$sql = "SELECT name FROM sysobjects WHERE type='U'";
+
+		$sql = "SELECT 
+		o.name as name,
+		max(i.rowcnt) as cpt
+		FROM 
+		sysobjects o,
+		sysindexes i
+		WHERE
+		i.id = o.id AND
+		o.type = 'U' -- User Tables
+		group by o.name 
+		having max(i.rowcnt) != 0
+		AND max(i.rowcnt) < 500000";
+
+		$stmt3 = mssql_query($sql, $dbh) or die($sql);
+
+		while ( $row2 = mssql_fetch_assoc($stmt3) )
+		{
+			$table = $row2['name'];
+			$cpt = $row2['cpt'];
+
+			$this->_i++;
+			echo $color->get_colored_string($this->_i . " [" . date("Y-m-d H:i:s") . "] TABLE : " . $table, "white", "blue") . "\n";
+
+			$this->extract_table($ip, $base, $table, $cpt, $dbh);
+		}
+	}
+
+	function extract_table($ip, $base, $table, $cpt, $dbh)
+	{
+		$color = new \glial\shell\color;
+
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+		$sql = "SELECT COLUMN_NAME, ORDINAL_POSITION, COLUMN_DEFAULT,IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH,
+			COLLATION_NAME, CHARACTER_SET_NAME
+                            FROM INFORMATION_SCHEMA.COLUMNS
+                            WHERE TABLE_NAME='" . $table . "' AND COLLATION_NAME is not null";
+
+		$stmt4 = mssql_query($sql, $dbh);
+
+		while ( $row3 = mssql_fetch_assoc($stmt4) )
+		{
+			$column = $row3['COLUMN_NAME'];
+			$data_type = $row3['DATA_TYPE'];
+			$collation = $row3['COLLATION_NAME'];
+			$set_name = $row3['CHARACTER_SET_NAME'];
+
+			echo $this->_i . " [" . date("Y-m-d H:i:s") . "] field : " . $color->get_colored_string($column, 'yellow', NULL) . " (" . $data_type . ")\n";
+
+			$where = " 1=1 ";
+			
+			$sql = "SELECT * FROM retour_chariot_auditprod WHERE `base`='".$base."' AND `table` = '".$table."' AND `where` !=''";
+			
+			echo "--".$sql."\n";
+			
+			$res = $_SQL->sql_query($sql);
+			while ($ob = $_SQL->sql_fetch_object($res )) 
+			{
+				$where = str_replace('Where','', $ob->where);
+				$where = str_replace('where','', $where);
+				
+			}
+			
+			
+
+			if ( in_array($data_type, array('ntext', 'text')) )
+			{
+				$sql = "SELECT  top 2000 [" . $column . "] FROM [" . $base . "]..[" . $table . "] WHERE CHARINDEX(char(10), [" . $column . "],1) >0 
+				OR CHARINDEX(char(13), [" . $column . "],1) >0 AND $where";
+			}
+			else
+			{
+				$sql = "select top 2000 [" . $column . "] FROM (SELECT  [" . $column . "] FROM [" . $base . "]..[" . $table . "] WHERE CHARINDEX(char(10), [" . $column . "],1) >0 AND $where 
+				UNION SELECT  [" . $column . "] FROM [" . $base . "]..[" . $table . "] WHERE CHARINDEX(char(13), [" . $column . "],1) >0 AND $where)  X";
+			}
+			
+			echo $sql ."\n";
+
+			$res3 = mssql_query($sql) or die();
+
+			while ( $ob3 = mssql_fetch_object($res3) )
+			{
+				$val = $ob3->{$column};
+
+				$sql = "INSERT INTO retour_chariot_data_full (`ip`,`base`,`table`,`cpt`,`field`,`type`, `collation`,`set_name`,`encodage`, `data`) 
+						values ('" . $ip . "','" . $_SQL->sql_real_escape_string($base) . "','" . $_SQL->sql_real_escape_string($table)
+					. "'," . $cpt . ",'" . $_SQL->sql_real_escape_string($column) . "','" . $data_type . "','" . $collation . "','" . $set_name . "','" . mb_detect_encoding($val) . "','" . $_SQL->sql_real_escape_string($val) . "')";
+				$_SQL->sql_query($sql);
+			}
+
+			$this->_i++;
+		}
+	}
+
+	function debug()
+	{
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+		$this->view = false;
+		$this->layout_name = false;
+
+		$sql = "SELECT * FROM data_dictionary_server  where id =1"; //where is_valid = 1
+		$res = $_SQL->sql_query($sql);
+
+		while ( $ob = $_SQL->sql_fetch_object($res) )
+		{
+
+			echo "Try to connect :" . $ob->ip;
+			echo "...";
+			echo str_repeat(" ", 15 - strlen($ob->ip) + 1);
+			$dbh = @mssql_connect($ob->ip, $ob->login, $ob->password);
+
+			$sql = "SELECT [Name] FROM [AnyWhere_Central]..[Company] WHERE CHARINDEX(char(10), [Name],1) >0 UNION SELECT [Name] FROM [AnyWhere_Central]..[Company] WHERE CHARINDEX(char(13), [Name],1) >0";
+			$sql = "SELECT [Comment] FROM [UKPANBRI1_7000]..[Client] WHERE CHARINDEX(char(10), [Comment],1) >0 UNION SELECT [Comment] FROM [UKPANBRI1_7000]..[Client] WHERE CHARINDEX(char(13), [Comment],1) >0";
+
+			$res3 = mssql_query($sql);
+
+			while ( $ob3 = mssql_fetch_object($res3) )
+			{
+
+				echo "(norm) Encoding : " . mb_detect_encoding($ob3->Comment) . " - ";
+
+				echo $ob3->Comment . "\n";
+
+				echo "(iconv) Encoding : " . mb_detect_encoding(utf8_encode($ob3->Comment)) . " - ";
+
+				echo utf8_encode($ob3->Comment) . "\n";
+			}
+		}
+	}
+
+	function impot_config_file()
+	{
+		$dir = "/home/www/arkadin/configuration/config_files/";
+
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+		$this->view = false;
+		$this->layout_name = false;
+
+		if ( is_dir($dir) )
+		{
+			if ( $dh = opendir($dir) )
+			{
+				while ( ($file = readdir($dh)) !== false )
+				{
+					if ( filetype($dir . $file) === "file" )
+					{
+						//echo "filename: $file : filetype: " . filetype($dir . $file) . "\n";
+						$tab_line = file($dir . $file);
+
+						
+						foreach ( $tab_line as $line )
+						{
+							$line = str_replace("\0", "", $line); 
+							
+							
+							$tab_elem = explode(";", $line);
+
+							if (count($tab_elem) != 4)
+							{
+								continue;
+							}
+							
+							
+							//echo $tab_elem[1]."\n";
+														
+							if ( strtolower(trim($tab_elem[1])) == "yes" )
+							{
+								$base = str_replace("_Table_List.csv", "", $file);
+								$sql = "INSERT INTO retour_chariot_auditprod (`base`,`table`, `where`) VALUES ('AUDITPROD_" . $base . "','" . $tab_elem[0] . "','" . $_SQL->sql_real_escape_string(trim($tab_elem[3])) . "')";
+								//echo $sql."\n";
+								$_SQL->sql_query($sql);
+								
+							}
+						}
+					}
+				}
+				closedir($dh);
+			}
 		}
 	}
 
