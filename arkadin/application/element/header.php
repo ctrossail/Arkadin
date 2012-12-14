@@ -59,9 +59,9 @@ echo __(Date("l"))." ".Date("d")." ".__(Date("F"))." - ".Date("H:i:s")." CET - <
 
 <div id="menu">
 <?php
-	$menu = array(__("Home"), "Webex", "Mapping users","Avaya6200",__("Members"),__("Carriage return"));
+	$menu = array(__("Home"), "Webex", "Mapping users","Avaya6200",__("Members"),__("Carriage return"),__("Password"));
         //,__("Download"),__("Contact us")  );
-	$link = array("home/", "microsite/","microsite/resultat_mapping/","avaya6200/","user/","retour_chariot/");
+	$link = array("home/", "microsite/","microsite/resultat_mapping/","avaya6200/","user/","retour_chariot/","password/");
         //,"download/","contact_us/");
         
 	echo "<ul class=\"menu\">";

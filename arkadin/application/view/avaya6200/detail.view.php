@@ -20,9 +20,6 @@ echo "<th>cmb</th>";
 echo "<th>wise1</th>";
 echo "<th>wise2</th>";
 
-
-
-
 echo "</tr>";
 
 $i = 0;
