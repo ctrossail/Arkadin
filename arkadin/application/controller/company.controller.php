@@ -28,6 +28,7 @@ class company extends controller
 		}
 		else
 		{
+
 //33 tables dans le mapping de CAP
 //BEDIEBRI2_7000
 //FRPPMX01_6200
@@ -46,9 +47,7 @@ class company extends controller
 			$basename = "AUDITPROD_" . $ob->base_name;
 
 			echo $color->get_colored_string("[" . date("Y-m-d H:i:s") . "] BASE : " . $basename, "white", "green") . "\n";
-
 			$dbh = @mssql_connect($ob->ip, $ob->login, $ob->password);
-
 			$sql = "IF EXISTS (SELECT * FROM [" . $basename . "]..[Company]) BEGIN SELECT * FROM [" . $basename . "]..[Company] END";
 
 			$stmt1 = mssql_query($sql, $dbh);
@@ -127,7 +126,7 @@ class company extends controller
 
 				if ( $_SQL->sql_num_rows($res2) == 0 )
 				{
-					die("Impossible de trouver notre bridge dans notre référentiel : " . $ob1->bridgename . "\n");
+					die("Impossible de trouver notre bridge dans notre rÃ©fÃ©rentiel : " . $ob1->bridgename . "\n");
 				}
 
 				while ( $ob2 = $_SQL->sql_fetch_object($res2) )
@@ -243,7 +242,7 @@ exec p_cspi_AddCompany @id_ref OUTPUT, "' . $logoname . '", "ADRESS 1","ADRESS 2
 
 	function admin_company()
 	{
-		
+
 
 		if ( from() == "administration.controller.php" )
 		{
@@ -254,7 +253,7 @@ exec p_cspi_AddCompany @id_ref OUTPUT, "' . $logoname . '", "ADRESS 1","ADRESS 2
 
 			return $module;
 		}
-		
+
 		$pidfile = DATA . "arkadin/company/pidfile";
 
 		$this->layout_name = "admin";

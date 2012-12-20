@@ -160,9 +160,12 @@ class bizfile extends controller
 
 	function convert()
 	{
+		
 		$this->view = false;
 		$this->layout_name = false;
-		shell_exec("iconv -f ISO-8859-1 -t UTF-8 " . $this->path . $this->file_name . " > " . $this->path . $this->file_out . "");
+		
+		shell_exec("cp ".$this->path . $this->file_name." ".$this->path . $this->file_out."");
+		//shell_exec("iconv -f ISO-8859-1 -t UTF-8 " . $this->path . $this->file_name . " > " . $this->path . $this->file_out . "");
 	}
 
 	function send_to_ftp()

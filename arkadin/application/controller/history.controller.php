@@ -2,6 +2,7 @@
 
 include CONFIG . 'history.config.php';
 
+
 class history extends controller {
 
 	public $module_group = "Administration";

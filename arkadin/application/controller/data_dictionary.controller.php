@@ -175,7 +175,6 @@ class data_dictionary extends Controller {
 					$sql = "SELECT name FROM sysobjects WHERE type='U'";
 					$stmt3 = mssql_query($sql, $dbh);
 
-
 					while ($row2 = mssql_fetch_assoc($stmt3)) {
 						$table['data_dictionary_table']['name'] = $row2['name'];
 

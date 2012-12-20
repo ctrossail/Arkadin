@@ -13,8 +13,6 @@ class retour_chariot extends controller
 
 		$_SQL = Singleton::getInstance(SQL_DRIVER);
 
-
-
 		if ( empty($param[0]) )
 		{
 			$param[0] = "auditprod";
