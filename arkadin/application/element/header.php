@@ -25,14 +25,16 @@ echo "<meta name=\"runtime\" content=\"[PAGE_GENERATION]\" />\n";
 
 
 echo "<title>".$GLIALE_TITLE." - Arkadin</title>\n";
+
 echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"".CSS."style.css\" />\n";
-echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"".CSS."extjs.css\" />\n";
+
+echo '<link rel="stylesheet" type="text/css" href="'.CSS.'easyui.css">  
+    <link rel="stylesheet" type="text/css" href="'.CSS.'icon.css">';
+
+
+//echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"".CSS."extjs.css\" />\n";
 //echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"javascripts/ext-3.0.0/resources/css/ext-all.css\" />\n";
 //echo "<link rel=\"shortcut icon\" href=\"esysteme/clavier.ico\" />\n";
-
-
-
-
 
 ?>
 </head>
@@ -59,9 +61,9 @@ echo __(Date("l"))." ".Date("d")." ".__(Date("F"))." - ".Date("H:i:s")." CET - <
 
 <div id="menu">
 <?php
-	$menu = array(__("Home"), "Webex", "Mapping users","Avaya6200",__("Members"),__("Carriage return"),__("Password"));
+	$menu = array(__("Home"), "Webex", "Mapping users","Avaya6200",__("Members"),__("Carriage return"),__("Password"),"Audit V1");
         //,__("Download"),__("Contact us")  );
-	$link = array("home/", "microsite/","microsite/resultat_mapping/","avaya6200/","user/","retour_chariot/","password/");
+	$link = array("home/", "microsite/","microsite/resultat_mapping/","avaya6200/","user/","retour_chariot/","password/","audit/dashboardv1");
         //,"download/","contact_us/");
         
 	echo "<ul class=\"menu\">";

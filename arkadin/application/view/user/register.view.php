@@ -2,7 +2,6 @@
 
 
 
-
 echo "<h3 class=\"item\">".__("Signalétique","fr")."</h3>";
 
 

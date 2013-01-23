@@ -38,7 +38,6 @@ echo "<div id=\"box\">";
 
 
 
-
 $login = new controller("apps", "block_apps", "");
 $login->get_controller();
 $login->display();
@@ -51,10 +50,7 @@ $login->display();
 
 
 
-
-
-
-
+echo " ";
 
 
 
