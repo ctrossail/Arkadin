@@ -379,7 +379,6 @@ class audit extends controller
 
 		foreach ( $files as $file )
 		{
-
 			if ( !strstr($file, ".txt") )
 			{
 				continue;
@@ -387,9 +386,7 @@ class audit extends controller
 
 			echo "currently insert : " . $file . "\n";
 
-
 			$size = filesize($directory_base_path . $file);
-
 
 			if ( $size == 0 )
 			{
@@ -397,15 +394,11 @@ class audit extends controller
 				continue;
 			}
 
-
-
 			$fp = fopen($directory_base_path . $file, "r");
 
 			if ( $fp )
 			{
-
 				$i = 0;
-
 				$sql = array();
 
 				while ( ($buffer = fgets($fp, 4096)) !== false )
@@ -415,13 +408,9 @@ class audit extends controller
 
 					//$buffer = trim(preg_replace("#([\t]+){1,}#", "\t", $buffer));
 
-
-
 					while ( substr($buffer, -3, 2) != "||" )
 					{
-
-
-						//echo "hmÃƒÆ’Ã‚Â¹".substr($buffer, -2);
+						//echo "hmÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¹".substr($buffer, -2);
 						//die();
 
 						$buffer = $buffer . fgets($fp, 4096);
@@ -430,10 +419,7 @@ class audit extends controller
 					$buffer = trim($buffer);
 					$buffer = substr($buffer, 0, -2);
 
-
 					$elems = explode("`|", $buffer);
-
-
 
 					foreach ( $elems as &$elem )
 					{
@@ -451,9 +437,6 @@ class audit extends controller
 
 					//print_r($elems_without_key);
 
-
-
-
 					$sql[] = "(NULL, '" . implode("', '", $elems) . "', '" . sha1(implode(",", $elems_without_key)) . "')";
 
 					if ( $i % 500 == 0 )
@@ -465,15 +448,10 @@ class audit extends controller
 					}
 				}
 
-
 				$query = "INSERT IGNORE INTO `capgemini_audit_" . pathinfo($file, PATHINFO_FILENAME) . "` VALUES " . implode(",\n", $sql);
 				$_SQL->sql_query($query);
 
-
 				shell_exec("mv " . $directory_base_path . $file . " " . $directory_base_path . "integrated/" . $file);
-
-
-
 
 				if ( !feof($fp) )
 				{
@@ -482,7 +460,6 @@ class audit extends controller
 				fclose($fp);
 			}
 		}
-
 
 		print_r($out);
 	}
@@ -541,6 +518,8 @@ class audit extends controller
 			{
 				$ret = array();
 				$i = 0;
+
+				
 				foreach ( $_POST['filter'] as $var )
 				{
 					foreach ( $var as $key => $val )
@@ -553,7 +532,10 @@ class audit extends controller
 				$ret[] = "filter:nbrows:" . $i;
 				$params = implode("/", $ret);
 
-				header("location: " . LINK . "audit/detail/" . $param[0] . "/" . $params);
+				
+				$filter = json_encode($_POST['filter']);
+				
+				header("location: " . LINK . "audit/detail/" . $param[0] . "/" . $params."/query:".$filter);
 				exit;
 			}
 
@@ -611,10 +593,10 @@ class audit extends controller
 		  $pagination->set_invalid_page_number_text(__("Please input a valid page number!"));
 		  $pagination->set_pages_number_text(__("pages of"));
 		  $pagination->set_go_button_text(__("Go"));
-		  $pagination->set_first_page_text("Â« " . __("First"));
-		  $pagination->set_last_page_text(__("Last") . " Â»");
-		  $pagination->set_next_page_text("Â»");
-		  $pagination->set_prev_page_text("Â«");
+		  $pagination->set_first_page_text("Ã‚Â« " . __("First"));
+		  $pagination->set_last_page_text(__("Last") . " Ã‚Â»");
+		  $pagination->set_next_page_text("Ã‚Â»");
+		  $pagination->set_prev_page_text("Ã‚Â«");
 		  $data['pagination'] = $pagination->print_pagination();
 
 		  $limit = " LIMIT " . $tab[0] . "," . $tab[1] . " ";
@@ -722,10 +704,10 @@ class audit extends controller
 		clone = $('tr.blah:first').clone();
 		clone.attr('id','tr-'+derline);
 		clone.find('input.delete-line').attr('id','delete-'+derline);
-		clone.find('input.variante_id').attr('id','variante_id'+derline).attr('name','data[filter]['+derline+'][variante_id]');
-		clone.find('select.flex').attr('id','flex-'+derline).attr('name','data[filter]['+derline+'][operator]').val($('tr.blah:first select.flex').val());
-		clone.find('select.prix').attr('id','prix-'+derline).attr('name','data[filter]['+derline+'][field]').val($('tr.blah:first select.prix').val());
-		clone.find('input.search').attr('id','search-'+derline).attr('name','data[filter]['+derline+'][search]').val($('tr.blah:first input.search').val());
+		//clone.find('input.variante_id').attr('id','variante_id'+derline).attr('name','data[filter]['+derline+'][variante_id]');
+		clone.find('select.field').attr('id','filter-'+derline+'-field').attr('name','filter['+derline+'][field]').val($('tr.blah:first select.field').val());
+		clone.find('select.operator').attr('id','filter-'+derline+'-operator').attr('name','filter['+derline+'][operator]').val($('tr.blah:first select.operator').val());
+		clone.find('input.search').attr('id','search-'+derline+'-search').attr('name','filter['+derline+'][search]').val($('tr.blah:first input.search').val());
 		$('#variante').append(clone); 
 		$('#nb_line').attr('value',derline);
 		$('input.delete-line').attr('disabled',false);

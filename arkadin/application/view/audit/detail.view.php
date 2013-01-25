@@ -1,10 +1,5 @@
 <?php
 
-echo "<pre>";
-print_r($_GET);
-print_r($data);
-echo "</pre>";
-
 
 /*
  * 1:Not Evalued
@@ -54,41 +49,43 @@ for ( $i = 0; $i < $nbrows; $i++ )
 	(! empty($_GET['filter']['search-'.$i])) ? $_GET['filter'][$i]['search'] = $_GET['filter']['search-'.$i]: $_GET['filter'][$i]['search'] = '';
 
 	
-
-echo "<pre>";
-print_r($_GET['filter'][$i]);
-print_r($_GET['filter'][$i]['search']);
-
-echo "</pre>";
-	
-	
-	
 	echo '<tr id="tr-'.($i+1).'" class="blah">
 	<td align="center">';
 	
-	echo select("filter[".$i."]","field",$data['field'],$field,"textform");
+	echo select("filter[".$i."]","field",$data['field'],$field,"textform field");
 	echo '</td>
 	<td>';
 	
-	echo select("filter[".$i."]","operator",$data['operator'],$operator,"textform");
+	echo select("filter[".$i."]","operator",$data['operator'],$operator,"textform operator");
 	echo '</td><td>';
 	
-	echo input("filter[".$i."]","search","textform");
+	echo input("filter","search","textform search",$i);
+	
+	
+	$disable = '';
+	if ($nbrows == 1)
+	{
+		$disable = 'disabled="disabled"';
+	}
+
 	
 	echo '</td><td>
-	<input id="delete-'.($i+1).'" class="delete-line button btBlueTest overlayW btMedium" type="button" value="Effacer" style="margin:0;" disabled="disabled">
+	<input id="delete-'.($i+1).'" class="delete-line button btBlueTest overlayW btMedium" type="button" value="Effacer" style="margin:0;" '.$disable.' />
 	</td></tr>';
 }
 
 echo '</tbody></table>';
-echo '</form>';
 
 echo '</td><td style="vertical-align: top">';
 echo '<input id="add" type="button" class="button btBlueTest overlayW btMedium" value="' . __('Add a filter') . '" />';
 echo '<input id="add" type="submit" class="button btBlueTest overlayW btMedium" value="' . __('Filter') . '" />';
 echo '</td></tr>';
 echo '</table>';
+echo '</form>';
 
+
+
+//data table
 echo '<table id="tg" title="Audit / ' . $data['table'] . '" style="height:600px" data-options="  
 view:scrollview,rownumbers:true,singleSelect:true,  
 url:\'' . LINK . 'audit/get_scroll/' . $data['table'] . '/\',  
@@ -102,11 +99,14 @@ foreach ( $data['field'] as $field )
 {
 	echo '<th field="' . $field['libelle'] . '" width="150" sortable="true">' . $field['libelle'] . '</th>';
 }
-
 echo '<th field="HASH" width="250">' . __("Hash") . '</th>';
-
 echo '</tr></thead></table>';
+
+
+//bulk
+
 echo '<div style="margin-top:10px">';
+echo '<form action="" method="POST">';
 echo '<select name="data[type]" class="textform" style="margin:0;">
 <option value="neval">Not evalued</option>
 <option value="accepted">Accepted</option>
@@ -115,6 +115,7 @@ echo '<select name="data[type]" class="textform" style="margin:0;">
 
 echo ' <input class="textform" type="input" name="text" style="width:300px" />';
 echo ' <input id="set" type="submit" class="button btBlueTest overlayW btMedium" value="' . __('Confirm') . '" />';
+echo '</form>';
 echo '</div>';
 
 /*

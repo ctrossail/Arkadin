@@ -43,7 +43,6 @@ class mx extends Controller
 		$this->view = false;
 		$this->layout_name = false;
 
-
 		$sql = "SELECT * FROM data_dictionary_server WHERE is_avaya6200 = 1 and mx != ''";
 		$res = $GLOBALS['_SQL']->sql_query($sql);
 

@@ -58,7 +58,6 @@ echo __(Date("l"))." ".Date("d")." ".__(Date("F"))." - ".Date("H:i:s")." CET - <
 </div>
 
     
-
 <div id="menu">
 <?php
 	$menu = array(__("Home"), "Webex", "Mapping users","Avaya6200",__("Members"),__("Carriage return"),__("Password"),"Audit V1");
