@@ -38,8 +38,8 @@ class audit extends controller
 			{
 				while ( ($file = readdir($dh)) !== false )
 				{
-//echo "filename: $file : filetype: " . filetype($dir . $file) . "\n";
-//echo "filename: " . $file . "\n";
+					//echo "filename: $file : filetype: " . filetype($dir . $file) . "\n";
+					//echo "filename: " . $file . "\n";
 
 					echo "gggg" . $dir . $file . "---------------\n";
 
@@ -177,7 +177,7 @@ class audit extends controller
 						case 'int':
 						case 'bit':
 							$sql4 .= "`_" . $ob3->COLUMN_NAME . "` int(11) NULL";
-//$sql4 .= "`" . $ob3->COLUMN_NAME . "` varchar(100)";
+							//$sql4 .= "`" . $ob3->COLUMN_NAME . "` varchar(100)";
 							break;
 
 						case 'nvarchar':
@@ -207,7 +207,7 @@ class audit extends controller
 					$sql4 .= ",\n";
 				}
 
-//$sql4 = substr($sql4,0,-2);
+				//$sql4 = substr($sql4,0,-2);
 				$sql4 .= "functional_key char(40),\n";
 				$sql4 .= "PRIMARY KEY (`id`),\n";
 				$sql4 .= "UNIQUE KEY (`_ID_RUN`,`functional_key`),\n";
@@ -220,7 +220,7 @@ class audit extends controller
 
 				echo $sql4;
 
-//echo $ob2->name . "\n";
+				//echo $ob2->name . "\n";
 			}
 		}
 	}
@@ -519,7 +519,7 @@ class audit extends controller
 				$ret = array();
 				$i = 0;
 
-				
+
 				foreach ( $_POST['filter'] as $var )
 				{
 					foreach ( $var as $key => $val )
@@ -532,10 +532,10 @@ class audit extends controller
 				$ret[] = "filter:nbrows:" . $i;
 				$params = implode("/", $ret);
 
-				
+
 				$filter = json_encode($_POST['filter']);
-				
-				header("location: " . LINK . "audit/detail/" . $param[0] . "/" . $params."/query:".$filter);
+
+				header("location: " . LINK . "audit/detail/" . $param[0] . "/" . $params . "/query:" . $filter);
 				exit;
 			}
 
@@ -952,7 +952,7 @@ begin
   DROP TABLE [" . $ob2->name . "]
 end
 ";
-				//echo "\n______________________________\n".$sql3 . "\n______________________________\n";
+//echo "\n______________________________\n".$sql3 . "\n______________________________\n";
 				mssql_query($sql3);
 			}
 		}
@@ -1316,6 +1316,315 @@ function formatProgress(value){
 		}
 
 		echo json_encode($output);
+	}
+
+	function dashboardv2()
+	{
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+		$this->layout_name = "admin";
+		$this->title = "Audit V2";
+		$this->ariane = "> Dashboard > " . $this->title;
+
+		//$sql = "SELECT * FROM audit_tree WHERE active = 0 ORDER by domain,system,reference";
+		$sql = "SELECT * FROM audit_tree_v2 ORDER by table_name,field_name,error_name";
+
+		$res = $_SQL->sql_query($sql);
+
+
+		$data = array();
+		$data['tree'] = $_SQL->sql_to_array($res);
+
+		//$this->javascript = array("CollapsibleLists.compressed.js");
+		//$this->code_javascript[] = "CollapsibleLists.apply();";
+
+		$this->javascript = array("jquery-1.8.0.min.js", "jquery.easyui.min.js");
+		$this->code_javascript[] = "
+		        function collapseAll(){
+            $('#tg').treegrid('collapseAll');
+        }
+        function expandAll(){
+            $('#tg').treegrid('expandAll');
+        }
+		
+function formatProgress(value){
+            if (value){
+                var s = ''
+				+'<div style=\"background:#bbb;border:1px solid #000\">' +
+				'<div style=\"background:#bbb;border:1px solid #fff\">' +
+                        '<div style=\"padding-left:2px;width:' + value + '%;background:#458B00;color:#fff;font-weight:700\">' + value + '%' + '</div>'
+                        +'</div></div>';
+                return s;
+            } else {
+                return '';
+            }  
+        } 
+	
+
+";
+
+		/*
+		  $this->code_javascript[] = "
+		  $('#tg').datagrid({
+		  rowStyler:function(index,row){
+		  if (row.id % 2 == 0){
+		  return 'background-color:pink;color:blue;font-weight:bold;';
+		  }
+		  }
+		  });  "; */
+
+		$this->set('data', $data);
+	}
+
+	function create_audit_tree_V2()
+	{
+
+		$this->view = false;
+		$this->layout_name = false;
+
+		// remove if exist audit_tree_v2 table
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+		$sql = "TRUNCATE TABLE audit_tree_v2";
+
+		$res = $_SQL->sql_query($sql);
+
+		// fetch Audit V2 config file
+		// and insert in audit_tree_v2 table
+		$directory_audit_config_path = "/home/www/arkadin/data/arkadin/AUDIT/config/";
+		$fp = fopen($directory_audit_config_path . "Audit_V2_Config.csv", "r");
+
+		if ( $fp )
+		{
+			$i = 0;
+			$sql = array();
+
+			// remove header line
+			$buffer = fgets($fp, 4096);
+			while ( ($buffer = fgets($fp, 4096)) !== false )
+			{
+
+				$elems = explode(";", $buffer);
+
+
+				/*
+				  //insert a first line for table summarize
+				  $query = "INSERT INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+				  //echo $query;
+				  $_SQL->sql_query($query);
+
+				  //insert a second for table/field summarize
+				  $query = "INSERT INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+				  //echo $query;
+				  $_SQL->sql_query($query); */
+
+				if ( $elems[4] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','Nullable',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+				if ( $elems[5] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','Unique',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+				if ( $elems[6] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','Range',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+				if ( $elems[7] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','Value',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+				if ( $elems[8] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','RegExp',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+				if ( $elems[9] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','RefTable',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+				if ( $elems[10] == 1 )
+				{
+					$query = "INSERT IGNORE INTO audit_tree_v2 VALUES (NULL, '" . trim($elems[1]) . "','" . trim($elems[2]) . "','Length',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL)";
+					$_SQL->sql_query($query);
+				}
+			}
+
+			if ( !feof($fp) )
+			{
+				echo "Error: unexpected fgets() fail\n";
+			}
+			fclose($fp);
+		}
+	}
+
+	/*
+	 * generate_cash_v2
+	 * 
+	 * $param is an array containing:
+	 * 		$param[0]: name of the table on which counters must be updated. If null all table audit_tree_v2 counters are updated
+	 * 		$param[1]: name of the field on which counters must be updated. If null all audit_tree_v2 counters are updated for the given table_name
+	 * 		$param[2]: name of the error on which counters must be updated. If null all audit_tree_v2 counters are updated for the given table_name, filed_name
+	 * update audit_tree_v2 table with:
+	 * total number of lines from ARKADIN_AUDIT related piv table
+	 * total number of lines in error in current run
+	 * total number of lines in error in reference run
+	 * added number of lines in error in current run (nb of new lines)
+	 * deleted number of lines in error from reference run (nb of deleted lines)
+	 * total number of lines in current run with accepted status
+	 * total number of lines in current run with to_be_corrected status
+	 * total number of lines in current run with in_wait status
+	 */
+
+	function generate_cash_v2($param)
+	{
+		$this->view = false;
+		$this->layout_name = false;
+		//debug($param);
+
+		$_SQL = Singleton::getInstance(SQL_DRIVER);
+
+		// get list of lines to be updated in audit_tree_v2
+		$sql = "SELECT * from audit_tree_v2 where '1'";
+		if ( !empty($param[0]) )
+		{
+			$sql .= " and table_name='" . $param[0] . "'";
+		}
+		if ( !empty($param[1]) )
+		{
+			$sql .= " and field_name='" . $param[1] . "'";
+		}
+		if ( !empty($param[2]) )
+		{
+			$sql .= " and error_name='" . $param[2] . "'";
+		}
+		$sql .= " order by table_name, field_name, error_name asc";
+
+		$_SQL->sql_query($sql);
+		$res = $_SQL->sql_query($sql);
+		//debug($res);
+		// get ARKADI_AUDIT mssql server infos
+		$sql2 = "SELECT * FROM data_dictionary_server where id=1";
+		$res2 = $_SQL->sql_query($sql2);
+
+		while ( $ob = $_SQL->sql_fetch_object($res2) ) // only 1 line
+		{
+			//open connection to ARKADIN_AUDIT DB
+			$db = @mssql_connect($ob->ip, $ob->login, $ob->password);
+
+			if ( !$db )
+			{
+				echo("ERROR : impossible to connect to " . $ob->ip . " - (mx : " . $ob->mx . ")\n");
+				continue;
+			}
+
+			mssql_select_db("ARKADIN_AUDIT");
+
+			// process list of lines to be updated in audit_tree_v2
+			while ( $to_be_updated = $_SQL->sql_fetch_object($res) )
+			{
+				//debug($to_be_updated);
+				$output = array();
+
+				//total: get count of all element for the given table in ARKADIN_AUDIT related PIV
+				$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "]";
+				$res3 = mssql_query($sql3);
+				$ob2 = mssql_fetch_object($res3);
+				$output['total'] = $ob2->cpt;
+
+				// total number of lines in error in current run
+				//$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] where ID_RUN=" . $_GET['run_current'] . "
+				$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] where ID_RUN=2
+					AND ERROR_" . $to_be_updated->field_name . "_" . $to_be_updated->error_name . " is not null";
+				$res3 = mssql_query($sql3);
+				$ob2 = mssql_fetch_object($res3);
+				$output['run_current'] = $ob2->cpt;
+
+				// total number of lines in error in reference run
+				//$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] where ID_RUN=" . $_GET['run_reference'] . "
+				$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] where ID_RUN=1
+					AND ERROR_" . $to_be_updated->field_name . "_" . $to_be_updated->error_name . " is not null";
+				$res3 = mssql_query($sql3);
+				$ob2 = mssql_fetch_object($res3);
+				$output['run_reference'] = $ob2->cpt;
+
+				// added number of lines in error in current run (nb of new lines)
+				// deleted number of lines in error from reference run (nb of deleted lines)
+				//$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] where ID_RUN in (" . $_GET['run_current'] . "," .
+				// $_GET['run_reference'] . ")
+				// where t.ID_RUN in ($_GET['run_current'],$_GET['run_refernce'])
+				$sql3 = "SELECT count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] t
+					join [HASH_" . $to_be_updated->table_name . "_V2] h on t.AUDIT_OID=h.AUDIT_OID
+					where t.ID_RUN in (1,2)
+					AND t.ERROR_" . $to_be_updated->field_name . "_" . $to_be_updated->error_name . " is not null
+					GROUP BY h.HASH HAVING COUNT(1)=2";
+				$res3 = mssql_query($sql3);
+				$total_in_both_run = mssql_fetch_object($res3);
+				$output['add'] = $output['run_current'] - $total_in_both_run;
+				$output['del'] = $output['run_reference'] - $total_in_both_run;
+
+				// total number of lines in current run with accepted status
+				// total number of lines in current run with to_be_corrected status
+				// total number of lines in current run with in_wait status
+				// AND t.ID_RUN = "2" . $_GET['run_current'] . "
+				$sql3 = "SELECT f.STATUS, count(1) as cpt FROM [" . $to_be_updated->table_name . "_V2] t
+					join [HASH_" . $to_be_updated->table_name . "_V2] h on t.AUDIT_OID=h.AUDIT_OID
+					left join [AUDIT_BLUESKY_FOLLOWED] f on h.HASH=f.HASH				
+					where t.ERROR_" . $to_be_updated->field_name . "_" . $to_be_updated->error_name . " is not null
+						AND t.ID_RUN = 2
+					GROUP BY f.STATUS";
+				debug($sql3);
+				$res3 = mssql_query($sql3);
+
+				$output['accpeted'] = 0;
+				$output['to_be_corrected'] = 0;
+				$output['in_wait'] = 0;
+				while ( $ob2 = mssql_fetch_object($res3) )
+				{
+					if ( ($ob2->STATUS == 2 ) )
+					{
+						$output['accpeted'] += $ob2->cpt;
+					}
+					else if ( ($ob2->STATUS == 2 ) )
+					{
+						$output['accpeted'] += $ob2->cpt;
+					}
+					else if ( is_null($ob2->STATUS) || ($ob2->STATUS == 1) )
+					{
+						$output['in_wait'] += $ob2->cpt;
+					}
+					else
+					{
+						die('unexpected status found in ARKADIN_AUDIT..AUDIT_BLUESKY_FOLLOWED table');
+					}
+				}
+
+
+				$sql4="UPDATE audit_tree_v2 a set
+				  total=".$output['total'].",
+				  run_current=".$output['run_current'].",
+				  run_reference=".$output['run_reference'].",
+				  run_reference=".$output['run_reference'].",
+				  add=".$output['add'].",
+				  del=".$output['del'].",
+				  accpeted=".$output['accpeted'].",
+				  to_be_corrected=".$output['to_be_corrected'].",
+				  in_wait=".$output['in_wait']."
+				  where a.table_name=" . $to_be_updated->table_name . " AND
+				  a.field_name=" . $to_be_updated->field_name . " AND
+				  a.error_name=" . $to_be_updated->error_name;
+				
+				debug($sql4);
+				debug($output);
+			}
+			//close connection to ARKADIN_AUDIT DB
+			mssql_close();
+		}
 	}
 
 }
